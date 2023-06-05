@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { Box, Container, Typography, useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { useEffect } from "react";
+import { Box, Container, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import booksService from "../../service/books";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,10 +11,6 @@ import { Link } from "react-router-dom";
 const MyBooks = () => {
   const dispatch = useDispatch();
   const { auth, books } = useSelector((state: any) => state);
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     booksService
@@ -24,19 +19,21 @@ const MyBooks = () => {
         method: "GET",
         body: { key: auth.user.key, secret: auth.user.secret },
       })
-      .then((a: any) =>
-        dispatch(
-          setAllBooks([
-            ...a?.data.map((item: any) => {
-              return {
-                ...item.book,
-                status: item.status,
-              };
-            }),
-          ]),
-        ),
-      );
-  }, [books.isRefresh, search]);
+      .then((a: any) => {
+        if (a?.data) {
+          dispatch(
+            setAllBooks([
+              ...a?.data.map((item: any) => {
+                return {
+                  ...item.book,
+                  status: item.status,
+                };
+              }),
+            ]),
+          );
+        }
+      });
+  }, [books.isRefresh, auth.user]);
 
   return (
     <Container maxWidth="lg" sx={{ minHeight: "100vh" }}>

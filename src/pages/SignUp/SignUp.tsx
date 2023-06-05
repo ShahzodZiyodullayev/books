@@ -96,7 +96,7 @@ const SignUp = () => {
       .then((a: any) => {
         dispatch(loginUserFailure(false));
         if (a?.isOk) {
-          dispatch(setSnack({ title: "Signed in", color: "success" }));
+          dispatch(setSnack({ title: "Signed up", color: "success" }));
         } else {
           dispatch(
             setSnack({ title: a?.response?.data?.message, color: "error" }),
