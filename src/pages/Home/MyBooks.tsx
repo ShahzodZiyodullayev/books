@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAllBooks } from "../../reducers/booksReducer";
 
 import BookCard from "../../components/BookCard";
+import { Link } from "react-router-dom";
 
 const MyBooks = () => {
   const dispatch = useDispatch();
@@ -63,7 +64,14 @@ const MyBooks = () => {
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h4">Data not found</Typography>
+              <Typography variant="h5" textAlign="center">
+                You have no books added yet. To add a book to your library, go
+                to the{" "}
+                <Link to="search" style={{ textDecoration: "none" }}>
+                  "Search books"
+                </Link>{" "}
+                menu
+              </Typography>
             </Grid>
           )}
         </Grid>

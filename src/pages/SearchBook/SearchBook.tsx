@@ -31,6 +31,9 @@ const SearchBook = () => {
   const { books, auth } = useSelector((state: any) => state);
   const [search, setSearch] = useState("");
   const isXs = useMediaQuery(theme.breakpoints.down("md"));
+  const [content, setContent] =
+    useState(`To search for books, enter the name of the book you need in the
+  "Search books" input field`);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -59,6 +62,9 @@ const SearchBook = () => {
           return a;
         })
         .then((a: any) => {
+          if (!a?.data?.length) {
+            setContent("Data not found");
+          }
           dispatch(startStopLoading(false));
           dispatch(setSearchBooks(a?.data));
         });
@@ -125,7 +131,7 @@ const SearchBook = () => {
             </Grid>
           ) : books?.searchBooks?.length ? (
             books?.searchBooks?.map((book: any, index: number) => (
-              <Grid xs={12} md={12} key={index}>
+              <Grid xs={12} md={6} key={index}>
                 <BookCard book={book} />
               </Grid>
             ))
@@ -140,7 +146,9 @@ const SearchBook = () => {
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h4">Data not found</Typography>
+              <Typography variant="h5" textAlign="center">
+                {content}
+              </Typography>
             </Grid>
           )}
         </Grid>

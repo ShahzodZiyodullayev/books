@@ -203,7 +203,7 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             <Button
               variant="outlined"
               color="error"
-              sx={{ width: { md: "30%", xs: "50%" } }}
+              // sx={{ width: { md: "30%", xs: "50%" } }}
               onClick={() => handleAdd(book.isbn)}
             >
               Add to my books
