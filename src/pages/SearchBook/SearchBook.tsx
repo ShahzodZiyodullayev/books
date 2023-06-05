@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Container,
   InputAdornment,
   TextField,
@@ -12,7 +11,7 @@ import BookCard from "../../components/BookCard";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import booksService from "../../service/books";
 import { setSearchBooks, startStopLoading } from "../../reducers/booksReducer";
 import Lottie from "react-lottie";

@@ -29,6 +29,7 @@ import authService from "../../../service/auth";
 import { loginUserOut, loginUserStart } from "../../../reducers/userReducer";
 import { useDispatch, useSelector } from "react-redux";
 import "./style.css";
+import { setAllBooks, setSearchBooks } from "../../../reducers/booksReducer";
 
 // component import
 // import useAuth from "../../../hooks/useAuth";
@@ -53,6 +54,8 @@ const Header = () => {
 
   const LogoutFunc = () => {
     dispatch(loginUserOut());
+    dispatch(setSearchBooks([]));
+    dispatch(setAllBooks([]));
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

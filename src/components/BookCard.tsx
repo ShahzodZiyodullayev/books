@@ -2,9 +2,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  List,
-  ListItem,
-  ListItemText,
   Paper,
   Stack,
   Typography,
@@ -18,6 +15,7 @@ import booksService from "../service/books";
 import { useDispatch, useSelector } from "react-redux";
 import { isRefresh } from "../reducers/booksReducer";
 import { setSnack } from "../reducers/snackbarReducer";
+import { useState } from "react";
 
 interface BookCardProps {
   book: {
@@ -35,17 +33,43 @@ interface BookCardProps {
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
-  padding: theme.spacing(1),
+  padding: theme.spacing(2),
   textAlign: "center",
   color: theme.palette.text.secondary,
-  // height: { md: "300px", xs: "auto" },
+  boxShadow: "0 0 60px -30px #999",
+  borderRadius: 15,
 }));
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("lg"));
+  const isMd = useMediaQuery(theme.breakpoints.down("lg"));
+  const isSm = useMediaQuery(theme.breakpoints.down("md"));
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
   const { auth } = useSelector((state: any) => state);
+  const [error, setError] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const imageStyles: React.CSSProperties = {
+    objectFit: "cover",
+    transition: "transform 0.3s ease-in-out",
+    transform: isHovered ? "scale(1.2) rotate(5deg)" : "scale(1) rotate(0deg)",
+    cursor: "pointer",
+    height: "100%",
+    width: "100%",
+  };
+
+  const handleImageError = () => {
+    setError(true);
+  };
 
   const handleDelete = (e: number | null | undefined) => {
     if (e !== null && e !== undefined) {
@@ -113,14 +137,15 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
     <Item>
       <Grid
         container
-        columnSpacing={isXs ? 0 : 2}
+        columnSpacing={isMd ? 2 : isSm ? 0 : isXs ? 0 : 2}
         sx={{
-          height: { lg: "300px", md: "auto", xs: "auto" },
-          width: "100%",
+          height: { lg: "320px", md: "auto", xs: "auto" },
+          width: "auto",
         }}
       >
         <Grid
           xs={12}
+          sm={6}
           md={12}
           lg={5}
           textAlign="start"
@@ -129,16 +154,33 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
             height: "100%",
           }}
         >
-          <img
-            src={book?.cover ? book.cover : noPhoto}
-            alt={book?.title}
-            height="100%"
-            width="100%"
-            style={{ objectFit: "cover" }}
-          />
+          <Box
+            height="inherit"
+            sx={{ overflow: "hidden", borderRadius: 3, display: "flex" }}
+          >
+            {error ? (
+              <img
+                src={noPhoto}
+                alt={book?.title}
+                style={imageStyles}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              />
+            ) : (
+              <img
+                src={book?.cover && book.cover}
+                onError={handleImageError}
+                alt={book?.title}
+                style={imageStyles}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              />
+            )}
+          </Box>
         </Grid>
         <Grid
           xs={12}
+          sm={6}
           md={12}
           lg={7}
           textAlign="start"
