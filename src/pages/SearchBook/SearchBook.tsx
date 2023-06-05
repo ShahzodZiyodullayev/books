@@ -48,7 +48,7 @@ const SearchBook = () => {
       dispatch(startStopLoading(true));
       booksService
         .searchBook({
-          url: `books/${search}`,
+          url: `books/${search.trim()}`,
           method: "GET",
           body: { key: auth.user.key, secret: auth.user.secret },
         })
@@ -124,7 +124,7 @@ const SearchBook = () => {
             >
               <Lottie
                 options={defaultOptions}
-                width="10%"
+                width="100px"
                 style={{ pointerEvents: "none" }}
               />
             </Grid>

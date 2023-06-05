@@ -1,16 +1,18 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
 import {
   Box,
+  Button,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  TextField,
+  Stack,
 } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { Formik, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import {
   loginUserFailure,
   loginUserStart,
@@ -18,6 +20,14 @@ import {
 } from "../../reducers/userReducer";
 import authService from "../../service/auth";
 import { setSnack } from "../../reducers/snackbarReducer";
+import "./style.css";
+
+const Schema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  key: Yup.string().required("Key is required"),
+  secret: Yup.string().required("Secret is required"),
+});
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -56,56 +66,10 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-interface TextFields {
-  name: string;
-  email: string;
-  key: string;
-  secret: string;
-}
-
 const SignUp = () => {
   const dispatch = useDispatch();
   const [showKey, setShowKey] = useState(false);
   const [showSecret, setShowSecret] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [textFields, setTextFields] = useState<TextFields>({
-    name: "",
-    email: "",
-    key: "",
-    secret: "",
-  });
-
-  const handleTextFieldChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { name, value } = event.target;
-    setTextFields((prevTextFields) => ({
-      ...prevTextFields,
-      [name]: value,
-    }));
-  };
-
-  function handleClick() {
-    dispatch(loginUserStart(true));
-    authService
-      .createNewUser({
-        url: "signup",
-        method: "POST",
-        data: textFields,
-      })
-      .then((a: any) => {
-        dispatch(loginUserFailure(false));
-        if (a?.isOk) {
-          dispatch(setSnack({ title: "Signed up", color: "success" }));
-        } else {
-          dispatch(
-            setSnack({ title: a?.response?.data?.message, color: "error" }),
-          );
-        }
-        return a;
-      })
-      .then((a: any) => dispatch(signUserUp(a.data)));
-  }
 
   const handleClickShowKey = () => setShowKey((show: any) => !show);
 
@@ -122,79 +86,169 @@ const SignUp = () => {
 
   return (
     <TabPanel value={1} index={1}>
-      <TextField
-        id="outlined-password-input"
-        label="Name"
-        type="text"
-        name="name"
-        autoComplete="current-password"
-        value={textFields.name}
-        onChange={handleTextFieldChange}
-      />
-      <TextField
-        id="outlined-password-input"
-        label="Email"
-        type="email"
-        name="email"
-        autoComplete="current-password"
-        value={textFields.email}
-        onChange={handleTextFieldChange}
-      />
-      <FormControl sx={{ width: "25ch" }} variant="outlined">
-        <InputLabel htmlFor="outlined-adornment-password">Key</InputLabel>
-        <OutlinedInput
-          id="outlined-adornment-password"
-          type={showKey ? "text" : "password"}
-          name="key"
-          value={textFields.key}
-          onChange={handleTextFieldChange}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={handleClickShowKey}
-                onMouseDown={handleMouseDownKey}
-                edge="end"
-              >
-                {showKey ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          }
-          label="Key"
-        />
-      </FormControl>
-      <FormControl sx={{ width: "25ch" }} variant="outlined">
-        <InputLabel htmlFor="outlined-adornment-password">Secret</InputLabel>
-        <OutlinedInput
-          id="outlined-adornment-password"
-          type={showSecret ? "text" : "password"}
-          name="secret"
-          value={textFields.secret}
-          onChange={handleTextFieldChange}
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={handleClickShowSecret}
-                onMouseDown={handleMouseDownSecret}
-                edge="end"
-              >
-                {showSecret ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          }
-          label="Secret"
-        />
-      </FormControl>
-      <LoadingButton
-        onClick={handleClick}
-        loading={loading}
-        variant="outlined"
-        size="large"
-        sx={{ width: "26.5ch", height: "56px" }}
+      <Formik
+        initialValues={{
+          name: "",
+          email: "",
+          key: "",
+          secret: "",
+        }}
+        enableReinitialize
+        validationSchema={Schema}
+        onSubmit={async (values) => {
+          dispatch(loginUserStart(true));
+          authService
+            .createNewUser({
+              url: "signup",
+              method: "POST",
+              data: values,
+            })
+            .then((a: any) => {
+              dispatch(loginUserFailure(false));
+              if (a?.isOk) {
+                dispatch(setSnack({ title: "Signed up", color: "success" }));
+              } else {
+                dispatch(
+                  setSnack({
+                    title: a?.response?.data?.message,
+                    color: "error",
+                  }),
+                );
+              }
+              return a;
+            })
+            .then((a: any) => dispatch(signUserUp(a.data)));
+        }}
       >
-        <span>Sign Up</span>
-      </LoadingButton>
+        {({ isSubmitting, values, handleChange, handleBlur, handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
+            <Stack spacing={3} direction="column">
+              <Box>
+                <FormControl sx={{ width: "25ch" }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Name
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type="text"
+                    name="name"
+                    value={values.name}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    label="Name"
+                  />
+                </FormControl>
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="errorMessage"
+                />
+              </Box>
+              <Box>
+                <FormControl sx={{ width: "25ch" }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Email
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type="email"
+                    name="email"
+                    value={values.email}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    label="Email"
+                  />
+                </FormControl>
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="errorMessage"
+                />
+              </Box>
+              <Box>
+                <FormControl sx={{ width: "25ch" }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Key
+                  </InputLabel>
+                  <OutlinedInput
+                    // id="outlined-adornment-password"
+                    type={showKey ? "text" : "password"}
+                    name="key"
+                    value={values.key}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowKey}
+                          onMouseDown={handleMouseDownKey}
+                          edge="end"
+                        >
+                          {showKey ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Key"
+                  />
+                </FormControl>
+                <ErrorMessage
+                  name="key"
+                  component="div"
+                  className="errorMessage"
+                />
+              </Box>
+              <Box>
+                <FormControl sx={{ width: "25ch" }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Secret
+                  </InputLabel>
+                  <OutlinedInput
+                    // id="outlined-adornment-password"
+                    type={showSecret ? "text" : "password"}
+                    name="secret"
+                    value={values.secret}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowSecret}
+                          onMouseDown={handleMouseDownSecret}
+                          edge="end"
+                        >
+                          {showSecret ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Secret"
+                  />
+                </FormControl>
+                <ErrorMessage
+                  name="secret"
+                  component="div"
+                  className="errorMessage"
+                />
+              </Box>
+              <Box>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  disabled={isSubmitting}
+                  fullWidth
+                  sx={{
+                    height: "56px",
+                    boxShadow: "none",
+                  }}
+                >
+                  Sign up
+                </Button>
+              </Box>
+            </Stack>
+          </Form>
+        )}
+      </Formik>
     </TabPanel>
   );
 };

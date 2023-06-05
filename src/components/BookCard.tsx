@@ -195,10 +195,16 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
               {book.title}
             </Typography>
 
-            <Typography variant="h6">Author: {book.author}</Typography>
-            <Typography variant="h6">ISBN-13: {book.isbn}</Typography>
-            <Typography variant="h6">Published: {book.published}</Typography>
-            {book.pages && (
+            {(book.author !== undefined || book.author !== null) && (
+              <Typography variant="h6">Author: {book.author}</Typography>
+            )}
+            {(book.isbn !== undefined || book.isbn !== null) && (
+              <Typography variant="h6">ISBN-13: {book.isbn}</Typography>
+            )}
+            {(book.published !== undefined || book.published !== null) && (
+              <Typography variant="h6">Published: {book.published}</Typography>
+            )}
+            {(book.pages !== undefined || book.pages !== null) && (
               <Typography variant="h6">{book.pages} pages</Typography>
             )}
           </Box>

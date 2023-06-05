@@ -23,7 +23,7 @@ const Loader = () => {
     >
       <Lottie
         options={defaultOptions}
-        width="10%"
+        width="100px"
         style={{ pointerEvents: "none" }}
       />
     </Box>
