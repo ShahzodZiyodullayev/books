@@ -192,21 +192,33 @@ const BookCard: React.FC<BookCardProps> = ({ book }) => {
         >
           <Box sx={{ mb: { md: 0, xs: 4 } }}>
             <Typography variant="h5" color="#000" fontWeight={600}>
-              {book.title}
+              {book.title.length > 80
+                ? book.title.slice(0, 80) + "..."
+                : book.title}
             </Typography>
 
-            {(book.author !== undefined || book.author !== null) && (
-              <Typography variant="h6">Author: {book.author}</Typography>
-            )}
-            {(book.isbn !== undefined || book.isbn !== null) && (
+            {book.author &&
+              (book.author !== undefined || book.author !== null) && (
+                <Typography variant="h6">
+                  Author:{" "}
+                  {book.author.length > 40
+                    ? book.author.slice(0, 40) + "..."
+                    : book.author}
+                </Typography>
+              )}
+            {book.isbn && (book.isbn !== undefined || book.isbn !== null) && (
               <Typography variant="h6">ISBN-13: {book.isbn}</Typography>
             )}
-            {(book.published !== undefined || book.published !== null) && (
-              <Typography variant="h6">Published: {book.published}</Typography>
-            )}
-            {(book.pages !== undefined || book.pages !== null) && (
-              <Typography variant="h6">{book.pages} pages</Typography>
-            )}
+            {book.published &&
+              (book.published !== undefined || book.published !== null) && (
+                <Typography variant="h6">
+                  Published: {book.published}
+                </Typography>
+              )}
+            {book.pages &&
+              (book.pages !== undefined || book.pages !== null) && (
+                <Typography variant="h6">{book.pages} pages</Typography>
+              )}
           </Box>
           {book?.id !== undefined && book?.status !== undefined ? (
             <Stack spacing={1} direction={"column"}>
