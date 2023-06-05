@@ -7,6 +7,14 @@ import { setAllBooks } from "../../reducers/booksReducer";
 
 import BookCard from "../../components/BookCard";
 import { Link } from "react-router-dom";
+import Lottie from "react-lottie";
+import data from "../../assets/loader.json";
+
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: data,
+};
 
 const MyBooks = () => {
   const dispatch = useDispatch();
@@ -44,7 +52,24 @@ const MyBooks = () => {
         }}
       >
         <Grid container spacing={3} width="auto" height="100%" my={3}>
-          {books?.allBooks?.length ? (
+          {books.isLoading ? (
+            <Grid
+              xs={12}
+              md={12}
+              height="auto"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Lottie
+                options={defaultOptions}
+                width="100px"
+                style={{ pointerEvents: "none" }}
+              />
+            </Grid>
+          ) : books?.allBooks?.length ? (
             books?.allBooks?.map((book: any, index: number) => (
               <Grid xs={12} md={6} key={index}>
                 <BookCard book={book} />
